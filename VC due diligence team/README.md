@@ -1,6 +1,6 @@
 # AI VC Due Diligence Agent Team
 
-A multi-agent team of eight specialist agents that does first-pass venture-capital due diligence on any startup. You give it a **company name or website URL**, and it researches the company live on the web. It then models the financials, scores the risk and writes an investment memo. The outputs are a **consulting-style HTML report**, a **revenue chart** and a **visual TL;DR infographic**.
+A multi-agent team of nine specialist agents that does first-pass venture-capital due diligence on any startup. You give it a **company name or website URL**, and it researches the company live on the web. It then models the financials, scores the risk and writes an investment memo. The outputs are a **consulting-style HTML report**, a **BCG/McKinsey-style 4-page executive PDF**, a **revenue chart** and a **visual TL;DR infographic**.
 
 It is built on **Google ADK** and is **multi-provider**: the same team runs on **Gemini** or **Claude**, and you choose with one setting.
 
@@ -20,6 +20,7 @@ python run.py "Example Startup" --provider claude         # Claude
 | 📈 | **Revenue charts** | Bear/Base/Bull 5-year projection chart with CAGR, drawn with matplotlib |
 | 🧠 | **Deep risk analysis** | Scored 1-10 across 5 categories (Market, Execution, Financial, Regulatory, Exit), with a risk chart |
 | 📄 | **Professional reports** | Consulting-style HTML investment report (print to PDF straight from the browser) |
+| 📑 | **Executive PDF brief** | A 4-page PDF for the investment committee, written as action titles in the BCG/McKinsey style. It covers the verdict, Situation-Complication-Resolution, thesis pillars, return scenarios, TAM/SAM/SOM circles, a moat scorecard, charts, risks and next steps |
 | 🎨 | **Visual TL;DR** | One-page infographic: AI-generated with the Gemini image model, or rendered locally |
 | 🔀 | **Gemini or Claude** | Switch the model provider with `LLM_PROVIDER`; you can also mix models per tier |
 
@@ -40,13 +41,15 @@ python run.py "Example Startup" --provider claude         # Claude
 5. **Writes the investment memo**: recommendation (STRONG INVEST / INVEST / WATCH / PASS), thesis, valuation and terms, return scenarios
 6. **Creates the HTML report**: one shareable, printable document
 7. **Generates the infographic**: a one-glance visual summary for busy partners
+8. **Writes the executive PDF brief**: 4 pages in the BCG/McKinsey style, ready to email to the investment committee
 
 ### Benefits
 
 - **Speed:** first-screen diligence drops from days to minutes, so you can screen 10x more deals.
-- **Consistency:** every deal goes through the same 8-step framework and the same 5-category risk scorecard, which makes deals comparable.
+- **Consistency:** every deal goes through the same 9-step framework and the same 5-category risk scorecard, which makes deals comparable.
 - **Traceability:** facts carry source links, and estimates are labelled as estimates with their method.
 - **Decision-ready output:** the verdict, conviction, valuation view and questions for management are all in the report.
+- **Board-ready format:** the 4-page executive PDF follows how strategy consultancies brief leadership: answer first, action titles, one idea per page.
 - **Vendor flexibility:** you can run on Gemini or Claude, change models without touching code, and fall back to free search and a local infographic when keys are missing.
 
 > ⚠️ AI-generated research can be wrong or out of date. Treat the output as a starting point for human diligence. It is not investment advice.
@@ -83,6 +86,9 @@ python run.py "Example Startup" --provider claude         # Claude
 ┌───────────────────┐   generate_infographic    ──► infographic.png
 │ 8. infographic    │
 └───────────────────┘
+┌───────────────────┐   generate_executive_pdf  ──► <company>_executive_brief.pdf (4 pages)
+│ 9. executive_pdf  │                              + executive_brief.json (editable)
+└───────────────────┘
 ```
 
 - **Orchestration:** an ADK `SequentialAgent`. Each agent writes its output to shared session state (`output_key`), and the next agent reads it through `{state}` placeholders in its instructions.
@@ -99,6 +105,7 @@ python run.py "Example Startup" --provider claude         # Claude
 | investment_memo_agent | deep | none | investment_memo |
 | report_agent | fast | generate_html_report | HTML report |
 | infographic_agent | fast | generate_infographic | infographic.png |
+| executive_pdf_agent | deep | generate_executive_pdf | 4-page executive PDF + executive_brief.json |
 
 ### Gemini vs Claude: what changes
 
@@ -121,11 +128,13 @@ VC due diligence team/
 ├── requirements.txt
 ├── .env.example            # copy to .env and add your keys
 ├── run.py                  # command-line runner (progress log + output paths)
+├── make_pdf.py             # rebuild the executive PDF from a run folder (no LLM, no keys)
 ├── vc_due_diligence/       # the ADK agent package (works with `adk web`)
 │   ├── __init__.py
 │   ├── agent.py            # the 8 agents + SequentialAgent root_agent
 │   ├── config.py           # provider/model/search/image switches
-│   └── tools.py            # URL reader, search, chart, risk, HTML report, infographic
+│   ├── tools.py            # URL reader, search, chart, risk, HTML report, infographic, PDF tool
+│   └── pdf_report.py       # reportlab layout for the 4-page executive brief
 ├── examples/               # sample outputs (fictional company, for illustration)
 └── outputs/                # one folder per run (git-ignored)
 ```
@@ -184,6 +193,7 @@ AI VC Due Diligence Agent Team  [provider=claude | fast=claude-sonnet-5-5 | deep
 [    14s] > 2/8 Company research - founders, funding, product, traction
 ...
   HTML report    outputs/razorpay_20261001-210512/razorpay_due_diligence_report.html
+  Executive PDF  outputs/razorpay_20261001-210512/razorpay_executive_brief.pdf
   Infographic    outputs/razorpay_20261001-210512/infographic.png
 ```
 
@@ -202,6 +212,8 @@ Each run writes to `outputs/<company>_<timestamp>/`:
 
 | File | What it is |
 |---|---|
+| `<company>_executive_brief.pdf` | **4-page BCG/McKinsey-style executive brief** (see below) |
+| `executive_brief.json` | The PDF's content. Edit it and re-run `make_pdf.py` to regenerate |
 | `<company>_due_diligence_report.html` | Full consulting-style report with charts embedded; open it in a browser and use Ctrl+P to save as PDF |
 | `revenue_projections.png` | Bear/Base/Bull revenue chart |
 | `risk_profile.png` | 5-category risk scorecard chart |
@@ -209,6 +221,27 @@ Each run writes to `outputs/<company>_<timestamp>/`:
 | `investment_memo.md` | The memo as markdown (CLI runs) |
 
 The `examples/` folder has sample outputs generated with made-up data for a fictional company, so you can see the format before running anything.
+
+### 6. The executive PDF brief
+
+The final agent acts as a strategy-consultancy engagement manager. It turns the team's work into a 4-page brief that follows consulting conventions: **every page opens with an action title** (a one-sentence "so what", not a topic label), the answer comes first, and the evidence follows.
+
+| Page | Content |
+|---|---|
+| 1. Executive summary | Recommendation banner (colour-coded), 6 KPI tiles, Situation / Complication / Resolution, key takeaways, investment-thesis pillars, Bear/Base/Bull return scenarios with MOIC |
+| 2. Company & market | Company fact sheet, TAM/SAM/SOM concentric circles, competitive landscape table, moat scorecard (High/Medium/Low), market insights |
+| 3. Financial outlook | Bear/Base/Bull revenue chart, financial highlights, unit-economics table |
+| 4. Risks & next steps | 5-category risk chart, top-risk table with mitigations, recommended next steps, methodology note |
+
+- **Always 4 pages:** each page is laid out to shrink to fit, so long content never spills onto a fifth page.
+- **Editable after the run:** the PDF content is saved to `executive_brief.json`. You can tweak a headline or fix a number, then rebuild without calling any LLM:
+
+```bash
+python make_pdf.py outputs/razorpay_20261001-210512
+python make_pdf.py outputs/razorpay_20261001-210512 --out Razorpay_IC_brief.pdf
+```
+
+`make_pdf.py` only needs `reportlab`; it doesn't need ADK or API keys. A sample is in `examples/sample_executive_brief.pdf`.
 
 ---
 

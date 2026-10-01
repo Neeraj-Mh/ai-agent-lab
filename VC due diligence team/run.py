@@ -18,14 +18,15 @@ import uuid
 
 APP_NAME = "vc_due_diligence"
 STEP_LABELS = {
-    "intake_agent": "1/8 Intake - resolving startup & reading website",
-    "company_research_agent": "2/8 Company research - founders, funding, product, traction",
-    "market_analysis_agent": "3/8 Market analysis - TAM/SAM, competitors, positioning",
-    "financial_model_agent": "4/8 Financial model - bear/base/bull projections",
-    "risk_assessment_agent": "5/8 Risk assessment - 5 categories",
-    "investment_memo_agent": "6/8 Investment memo - thesis & recommendation",
-    "report_agent": "7/8 HTML report",
-    "infographic_agent": "8/8 Visual TL;DR infographic",
+    "intake_agent": "1/9 Intake - resolving startup & reading website",
+    "company_research_agent": "2/9 Company research - founders, funding, product, traction",
+    "market_analysis_agent": "3/9 Market analysis - TAM/SAM, competitors, positioning",
+    "financial_model_agent": "4/9 Financial model - bear/base/bull projections",
+    "risk_assessment_agent": "5/9 Risk assessment - 5 categories",
+    "investment_memo_agent": "6/9 Investment memo - thesis & recommendation",
+    "report_agent": "7/9 HTML report",
+    "infographic_agent": "8/9 Visual TL;DR infographic",
+    "executive_pdf_agent": "9/9 Executive PDF brief (BCG/McKinsey style)",
 }
 
 
@@ -60,10 +61,11 @@ async def main(query: str) -> int:
     session = await sessions.get_session(app_name=APP_NAME, user_id=user_id, session_id=session_id)
     state = session.state
     print(f"\nDone in {time.time() - started:.0f}s\n")
-    print("Final summary:\n" + str(state.get("infographic_summary", "")).strip() + "\n")
+    print("Final summary:\n" + str(state.get("executive_pdf_summary") or state.get("infographic_summary", "")).strip() + "\n")
     for label, key in [
         ("Output folder", "output_dir"),
         ("HTML report", "report_path"),
+        ("Executive PDF", "pdf_path"),
         ("Revenue chart", "chart_path"),
         ("Risk chart", "risk_chart_path"),
         ("Infographic", "infographic_path"),

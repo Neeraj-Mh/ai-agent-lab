@@ -10,6 +10,7 @@ Pipeline (SequentialAgent), each step writes its result into session state:
   investment_memo_agent   -> investment_memo      (thesis, valuation view, recommendation)
   report_agent            -> report_summary       (McKinsey-style HTML report)
   infographic_agent       -> infographic_summary  (visual TL;DR PNG)
+  executive_pdf_agent     -> executive_pdf_summary (BCG/McKinsey-style 4-page PDF brief)
 
 Note: text inside instructions uses ADK state templating, so curly braces are only
 used for state keys.
@@ -22,6 +23,7 @@ from google.adk.agents import LlmAgent, SequentialAgent
 from . import config
 from .tools import (
     fetch_webpage,
+    generate_executive_pdf,
     generate_html_report,
     generate_infographic,
     generate_revenue_chart,
@@ -257,9 +259,51 @@ Call generate_infographic exactly once with:
   base-case CAGR, overall risk, proposed valuation)
 - strengths: 3-4 bullets (max 10 words each)
 - risks: 3-4 bullets (max 10 words each)
-Then reply with a final summary listing: recommendation, report path and infographic path.""",
+Then reply with one line confirming the infographic path.""",
     tools=[generate_infographic],
     output_key="infographic_summary",
+)
+
+# ----------------------------------------------------------------------------- 9. Executive PDF
+executive_pdf_agent = LlmAgent(
+    name="executive_pdf_agent",
+    model=DEEP,
+    description="Writes the BCG/McKinsey-style 4-page executive PDF brief from the team's artifacts.",
+    instruction="""You are an engagement manager at a top strategy consultancy turning the team's work into a
+4-page executive brief for the investment committee. Write like BCG / McKinsey:
+- Every page has an ACTION TITLE: one full sentence stating the so-what, not a topic label
+  (good: "Acme can reach USD 21M revenue by 2031, but only if enterprise churn stays below 8%";
+  bad: "Financial overview").
+- Pyramid principle: answer first, then support. Short, numeric, specific. No filler.
+- Keep every bullet to one sentence; reuse the numbers already established by the team - do not invent new ones.
+
+Startup brief:
+{startup_brief}
+
+Company research:
+{company_profile}
+
+Market analysis:
+{market_analysis}
+
+Financial model:
+{financial_model}
+
+Risk assessment:
+{risk_assessment}
+
+Investment memo:
+{investment_memo}
+
+Call generate_executive_pdf exactly once, filling every argument (recommendation, conviction and valuation
+exactly as in the memo; key_metrics as 6 "Label: Value" items; investment_thesis, return_scenarios,
+competitors, moat_assessment and top_risks as rows separated with " | "; return_scenarios taken from the
+memo's bear/base/bull exit values and MOIC). The revenue and risk charts are added automatically.
+
+Then reply with a final summary: recommendation and conviction, the one-sentence headline, and the paths of
+the HTML report, infographic and executive PDF (use the output folder from the tool result).""",
+    tools=[generate_executive_pdf],
+    output_key="executive_pdf_summary",
 )
 
 # ----------------------------------------------------------------------------- Team
@@ -267,7 +311,7 @@ root_agent = SequentialAgent(
     name="vc_due_diligence_team",
     description=(
         "AI VC due-diligence team: give it a startup name or website URL and it researches the company "
-        "and market, models revenue, scores risk, writes an investment memo, an HTML report and an infographic."
+        "and market, models revenue, scores risk, writes an investment memo, an HTML report, an infographic and a 4-page executive PDF."
     ),
     sub_agents=[
         intake_agent,
@@ -278,5 +322,6 @@ root_agent = SequentialAgent(
         investment_memo_agent,
         report_agent,
         infographic_agent,
+        executive_pdf_agent,
     ],
 )

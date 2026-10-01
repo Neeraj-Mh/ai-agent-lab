@@ -500,3 +500,82 @@ def generate_infographic(
     if getattr(tool_context, "state", None) is not None:
         tool_context.state["infographic_path"] = str(path)
     return {"status": "ok", "engine": engine, "infographic_path": str(path), "note": note}
+
+
+# --------------------------------------------------------------------------- 7. executive PDF
+def generate_executive_pdf(
+    company_name: str,
+    recommendation: str,
+    conviction: str,
+    proposed_valuation: str,
+    headline: str,
+    situation: str,
+    complication: str,
+    resolution: str,
+    key_takeaways: list[str],
+    investment_thesis: list[str],
+    return_scenarios: list[str],
+    key_metrics: list[str],
+    company_facts: list[str],
+    market_headline: str,
+    market_sizing: list[str],
+    competitors: list[str],
+    moat_assessment: list[str],
+    market_insights: list[str],
+    financial_headline: str,
+    financial_highlights: list[str],
+    unit_economics: list[str],
+    risk_headline: str,
+    top_risks: list[str],
+    next_steps: list[str],
+    tool_context: ToolContext,
+) -> dict:
+    """Build a BCG/McKinsey-style 4-page executive PDF brief from the team's artifacts (charts are added automatically).
+
+    Args:
+        company_name: Startup name.
+        recommendation: "STRONG INVEST", "INVEST", "WATCH" or "PASS".
+        conviction: "High", "Medium" or "Low".
+        proposed_valuation: Short valuation view, e.g. "USD 40-55M pre-money".
+        headline: Page-1 action title - one sentence stating the overall so-what (max 25 words).
+        situation: 1-2 sentences - the context (what the company is, where it stands).
+        complication: 1-2 sentences - the tension or key question for investors.
+        resolution: 1-2 sentences - the answer / recommendation and why.
+        key_takeaways: 3-5 one-sentence takeaways.
+        investment_thesis: 3-4 pillars "Pillar title | one-sentence evidence".
+        return_scenarios: 3 rows "Bear|Base|Bull | exit value | MOIC | key assumption".
+        key_metrics: 6 "Label: Value" items, e.g. "TAM: $18B", "ARR: $4.0M", "Overall risk: 4.6/10".
+        company_facts: Up to 9 "Label: Value" items (Founded, HQ, Stage, Total funding, Lead investors, Team, ...).
+        market_headline: Page-2 action title (one sentence so-what about the market and positioning).
+        market_sizing: 3 "Label: Value" items: TAM, SAM, SOM with short basis, e.g. "TAM: $18B (2026, global)".
+        competitors: Up to 6 rows "Name | scale/positioning | how the target differs".
+        moat_assessment: 3-5 rows "Dimension | High/Medium/Low | evidence" (e.g. data, network effects,
+            switching costs, brand, regulation, technology).
+        market_insights: 3-5 one-sentence insights (drivers, why now).
+        financial_headline: Page-3 action title (one sentence so-what about the financial outlook).
+        financial_highlights: 3-5 one-sentence highlights (baseline, scenario CAGRs, capital needs, valuation).
+        unit_economics: Up to 8 "Label: Value" items (CAC, LTV, LTV/CAC, gross margin, payback, burn multiple).
+        risk_headline: Page-4 action title (one sentence so-what about the risk profile).
+        top_risks: Up to 6 rows "Category | key risk | mitigation or diligence ask".
+        next_steps: 3-6 concrete next diligence steps.
+    """
+    import json
+
+    from .pdf_report import build_executive_pdf
+
+    brief = {k: v for k, v in locals().items() if k not in {"tool_context", "json", "build_executive_pdf"}}
+    out_dir = _output_dir(tool_context, company_name)
+    (out_dir / "executive_brief.json").write_text(json.dumps(brief, indent=2, ensure_ascii=False), encoding="utf-8")
+
+    images = {
+        "chart": _state(tool_context, "chart_path") or str(out_dir / "revenue_projections.png"),
+        "risk_chart": _state(tool_context, "risk_chart_path") or str(out_dir / "risk_profile.png"),
+    }
+    path = out_dir / f"{_slug(company_name)}_executive_brief.pdf"
+    try:
+        build_executive_pdf(path, brief, images)
+    except Exception as exc:
+        return {"status": "error", "error": str(exc)}
+    if getattr(tool_context, "state", None) is not None:
+        tool_context.state["pdf_path"] = str(path)
+    return {"status": "ok", "pdf_path": str(path), "pages": 4}

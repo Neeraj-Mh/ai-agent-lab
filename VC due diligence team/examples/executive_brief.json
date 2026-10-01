@@ -1,0 +1,99 @@
+{
+  "company_name": "Acme Ledger (Sample)",
+  "recommendation": "INVEST",
+  "conviction": "Medium",
+  "proposed_valuation": "USD 40-55M pre-money",
+  "headline": "Acme Ledger is a capital-efficient leader in lender reconciliation; invest at USD 40-55M with milestones tied to enterprise churn",
+  "situation": "Acme Ledger sells AI reconciliation software to 140 Indian NBFCs and SMB lenders, at ~USD 4.0M ARR growing ~2.1x YoY.",
+  "complication": "Core-banking vendors are bundling basic reconciliation, and 38% of revenue sits with the top 5 customers.",
+  "resolution": "Invest: a 9-month payback, 118% net revenue retention and RBI co-lending tailwinds outweigh concentration risk if diligence confirms churn.",
+  "key_takeaways": [
+    "Product reduces reconciliation effort by ~70% at pilot lenders, giving a clear ROI story (₹2.4 Cr saved per lender per year).",
+    "Market is large and under-penetrated: USD 18B TAM, USD 4B SAM in India + SEA lenders.",
+    "Base case reaches USD 21M revenue by 2031 (51% CAGR); bull case USD 42M if SEA expansion lands.",
+    "Main risks are customer concentration and long enterprise sales cycles - both testable in diligence.",
+    "Entry at USD 40-55M implies 3.2-5.4x base-case MOIC over 5 years."
+  ],
+  "investment_thesis": [
+    "Painful, budgeted problem | Lenders spend ~4% of opex on manual reconciliation",
+    "Proven ROI | ~70% effort reduction at pilot lenders",
+    "Data moat | 1,200+ lender-specific rules competitors lack",
+    "Efficient growth | 9-month CAC payback, 118% NRR"
+  ],
+  "return_scenarios": [
+    "Bear | USD 60M | 1.1x | Growth stalls at 28% CAGR, trade sale",
+    "Base | USD 210M | 3.8x | 51% CAGR, 10x revenue exit in 2031",
+    "Bull | USD 420M | 7.6x | SEA expansion lands, strategic acquirer premium"
+  ],
+  "key_metrics": [
+    "TAM: $18B",
+    "ARR: $4.0M",
+    "Total funding: $11M",
+    "Base CAGR: 51%",
+    "Overall risk: 4.6/10",
+    "Valuation: $40-55M"
+  ],
+  "company_facts": [
+    "Founded: 2022",
+    "HQ: Bangalore, India",
+    "Stage: Series A",
+    "Total funding: USD 11M",
+    "Lead investors: Example Ventures, Sample Capital",
+    "Team: 85 FTE (40 engineering)",
+    "Customers: 140 lenders",
+    "Business model: SaaS, per-loan-volume pricing"
+  ],
+  "market_headline": "A USD 4B serviceable market is opening as RBI co-lending rules force lenders to automate reconciliation, and Acme is the only lender-native player",
+  "market_sizing": [
+    "TAM: $18B (global lender ops software, 2026)",
+    "SAM: $4.0B (India + SEA NBFCs and SMB lenders)",
+    "SOM: $300M (5-year reachable share)"
+  ],
+  "competitors": [
+    "CoreBank Suite | Large core-banking vendor; bundles basic recon | Acme is lender-workflow native, 3x faster go-live",
+    "ReconPro | Horizontal recon tool, USD 30M ARR | No lending-specific rules engine",
+    "In-house builds | Large banks build their own | Acme 60% cheaper over 3 years"
+  ],
+  "moat_assessment": [
+    "Proprietary data | High | 1,200+ lender rules and 30M reconciled loans",
+    "Switching costs | Medium | Embedded in month-end close; 6-week migration",
+    "Network effects | Low | Limited cross-lender benefit today",
+    "Regulatory know-how | Medium | RBI co-lending compliance built in"
+  ],
+  "market_insights": [
+    "Co-lending volumes grew 3x since 2024, multiplying reconciliation complexity.",
+    "Lenders spend ~4% of opex on manual operations - automation budget is real.",
+    "Acme's rules library (1,200+ lender rules) is a data moat competitors lack."
+  ],
+  "financial_headline": "Base case reaches USD 21M revenue by 2031 with best-in-class unit economics, needing one more raise of ~USD 15M",
+  "financial_highlights": [
+    "FY26 baseline ARR USD 4.0M (company-reported; partially verified).",
+    "Bear / base / bull CAGR of 28% / 51% / 70% over 2027-2031.",
+    "Gross margin ~78%, rising to 82% with automation.",
+    "Runway of 20 months; next raise ~USD 15M in 2027."
+  ],
+  "unit_economics": [
+    "CAC: USD 18K (estimate)",
+    "LTV: USD 160K",
+    "LTV / CAC: 8.9x",
+    "Gross margin: 78%",
+    "CAC payback: 9 months",
+    "Burn multiple: 1.3x",
+    "Net revenue retention: 118%"
+  ],
+  "risk_headline": "Overall risk is moderate (4.6/10); execution and concentration are the two risks diligence must clear",
+  "top_risks": [
+    "Execution | Enterprise sales cycles of 6-9 months slow growth | Review pipeline conversion and sales hiring plan",
+    "Market | Core-banking vendors bundle free recon | Win-loss interviews with 10 lenders",
+    "Financial | Top-5 customers = 38% of revenue | Contract terms, renewal dates and churn history",
+    "Regulatory | RBI data-localisation changes | Legal review of data architecture",
+    "Exit | Limited Indian SaaS IPO path | Map strategic acquirers (core-banking, payments)"
+  ],
+  "next_steps": [
+    "Run 8-10 customer reference calls, prioritising top-5 accounts.",
+    "Obtain monthly ARR, cohort and churn data for the last 24 months.",
+    "Technical diligence on the rules engine and data security.",
+    "Model downside if the largest customer churns.",
+    "Negotiate milestone-based tranche tied to NRR above 110%."
+  ]
+}
