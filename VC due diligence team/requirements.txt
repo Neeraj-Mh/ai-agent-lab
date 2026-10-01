@@ -1,0 +1,9 @@
+google-adk>=1.0.0
+google-genai>=1.0.0
+litellm>=1.50.0        # Claude (and other providers) via ADK's LiteLlm bridge
+python-dotenv>=1.0.0
+matplotlib>=3.8.0
+markdown>=3.5
+requests>=2.31
+beautifulsoup4>=4.12
+ddgs>=9.0              # free web search for Claude mode (no key needed)

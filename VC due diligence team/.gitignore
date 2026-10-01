@@ -1,0 +1,6 @@
+.env
+outputs/*
+!outputs/.gitkeep
+__pycache__/
+.adk/
+*.db
